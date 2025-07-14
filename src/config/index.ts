@@ -33,6 +33,7 @@ const config = (config: Record<string, unknown>) => {
             : 'http://localhost:8080',
       identityPem: ENVS.IC_IDENTITY_PEM,
       frontendWasmPath: ENVS.IC_FRONTEND_WASM_PATH,
+      frontendWashHash: 'LCS14VhIkKeWUBHV0dgnrKaMSJyaYwhHVzBCD6Uzcug=',
       // cycles ledger canister id
       clcId: 'um5iw-rqaaa-aaaaq-qaaba-cai',
 

@@ -96,10 +96,26 @@ export class IcService {
 
   async installCode(canisterId: string, reInstall?: boolean) {
     const agent = await this.getAgent();
-    const wasmPath = this.configService.get('ic.frontendWasmPath', {
-      infer: true,
-    });
-    const wasmBuffer = await fs.readFile(wasmPath);
+    const { frontendWasmPath, frontendWashHash } = this.configService.get(
+      'ic',
+      {
+        infer: true,
+      },
+    );
+    if (reInstall) {
+      const canisterStatus = await this.getRawCanisterStatus(canisterId);
+      const hashBuf = canisterStatus.module_hash[0];
+      if (hashBuf) {
+        const hash = Buffer.from(hashBuf).toString('base64');
+        if (hash === frontendWashHash) {
+          this.logger.log(
+            `Canister ${canisterId} already has same code. Skipping installation!`,
+          );
+          return;
+        }
+      }
+    }
+    const wasmBuffer = await fs.readFile(frontendWasmPath);
     await Actor.install(
       {
         module: wasmBuffer,
