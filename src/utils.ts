@@ -1,7 +1,6 @@
 import { Logger } from '@nestjs/common';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { IcController } from './core/ic/ic.controller';
 
 export async function getFilesRecursive(dirPath: string): Promise<string[]> {
   const files: string[] = [];
@@ -13,6 +12,9 @@ export async function getFilesRecursive(dirPath: string): Promise<string[]> {
       const fullPath = path.join(currentPath, entry.name);
 
       if (entry.isDirectory()) {
+        if (entry.name === '__MACOSX') {
+          continue;
+        }
         await traverse(fullPath);
       } else {
         files.push(fullPath);
