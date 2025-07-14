@@ -127,9 +127,7 @@ export class IcService {
         canisterId,
       },
     );
-    this.logger.debug(
-      `Code installed successfully for canister: ${canisterId}`,
-    );
+    this.logger.log(`Code installed successfully for canister: ${canisterId}`);
   }
 
   async addAssets(canisterId: string, folderPath: string) {
@@ -149,18 +147,22 @@ export class IcService {
 
     // Recursively get all files
     const files = await getFilesRecursive(folderPath);
+    this.logger.log({
+      msg: `Uploading files in canister: ${canisterId}`,
+      totalFiles: files.length,
+      files,
+    });
     await batchExecute(files, 5, async (file) => {
       const content = await fs.readFile(file);
       const relativePath = path.relative(folderPath, file);
       const contentType = getContentType(file);
-      this.logger.debug({
-        message: `Storing asset: ${relativePath}`,
+      this.logger.log({
+        msg: `Storing asset: ${relativePath}`,
         args: {
           key: `/${relativePath}`,
           content_type: contentType,
         },
       });
-
       await actor.store({
         key: `/${relativePath}`,
         content,
@@ -168,8 +170,8 @@ export class IcService {
         content_encoding: '',
         sha256: [],
       });
+      this.logger.log(`Asset ${relativePath} uploaded`);
     });
-    // TODO: Test me
     const icAssetContentsBuffer = Buffer.from(
       JSON.stringify(
         [

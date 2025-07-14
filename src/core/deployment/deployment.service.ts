@@ -60,6 +60,7 @@ export class DeploymentService {
           canisterBlockId: blockId,
         });
       }
+      this.logger.log(`Installing code in canister ${canisterId}`);
       await this.icService.installCode(canisterId, !!deployment);
       await sleep(5000);
       await this.icService.addAssets(canisterId, folderPath);
